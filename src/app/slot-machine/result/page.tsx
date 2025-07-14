@@ -12,6 +12,8 @@ import {
 import { Button } from '@/components/ui/button';
 import confetti from 'canvas-confetti';
 import { PhoneCall } from 'lucide-react';
+import CouponDisclaimer from '@/components/coupon-disclaimer';
+import Footer from '@/components/footer';
 
 function ResultContent() {
   const searchParams = useSearchParams();
@@ -70,115 +72,138 @@ function ResultContent() {
   }, []);
 
   return (
-    <Container>
-      <div className="text-center">
-        {/* <h1 className="text-black text-4xl font-bold font-gmarket mb-6">
-          🎉 축하합니다! 🎉
-        </h1> */}
+    <div className="flex-1">
+      <Container>
+        <div className="text-center">
+          {/* <h1 className="text-black text-4xl font-bold font-gmarket mb-6">
+            🎉 축하합니다! 🎉
+          </h1> */}
 
-        <div className="mb-4">
-          <span className="text-black text-2xl font-bold font-gmarket">
-            {parseInt(wonAmount).toLocaleString()}원 쿠폰 당첨!
-          </span>
-        </div>
-
-        {/* 쿠폰 이미지 */}
-        <div className="flex items-center justify-center w-full h-auto mb-4">
-          <Image
-            src={`/asset/${wonAmount}won.png`}
-            alt={`${wonAmount}원 쿠폰`}
-            width={200}
-            height={200}
-            priority
-          />
-        </div>
-
-        <div className="flex flex-col items-center justify-center gap-4 mb-6">
-          <div className="flex flex-col gap-1 text-center">
-            <p className="text-gray-400 text-sm font-pretendard">유효기간</p>
-            <p className="text-black text-base font-pretendard">
-              {formatCouponValidityPeriod()} 까지
-            </p>
+          <div className="mb-4">
+            <span className="text-black text-2xl font-bold font-gmarket">
+              {parseInt(wonAmount).toLocaleString()}원 쿠폰 당첨!
+            </span>
           </div>
-          <div className="flex flex-col gap-1 text-center">
-            <p className="text-gray-400 text-sm font-pretendard">쿠폰번호</p>
-            <p className="text-black text-base font-pretendard">
-              {serialNumber}
-            </p>
+
+          {/* 쿠폰 이미지 */}
+          <div className="flex items-center justify-center w-full h-auto mb-4">
+            <Image
+              src={`/asset/${wonAmount}won.png`}
+              alt={`${wonAmount}원 쿠폰`}
+              width={200}
+              height={200}
+              priority
+            />
           </div>
-          <div className="flex flex-col gap-1 text-center">
-            <p className="text-gray-400 text-sm font-pretendard">사용방법</p>
-            <p className="text-black text-base font-pretendard">
-              1. 이 화면을 캡처해서 저장하세요 <br />
-              2. 아래 "쿠폰사용하기" 버튼을 눌러주세요 <br />
-              3. 담당자에게 전화를 걸어 쿠폰 번호를 알려주세요
-            </p>
+
+          <div className="flex flex-col items-center justify-center gap-4 mb-6">
+            <div className="flex flex-col gap-1 text-center">
+              <p className="text-gray-400 text-sm font-pretendard">유효기간</p>
+              <p className="text-black text-base font-pretendard">
+                {formatCouponValidityPeriod()} 까지
+              </p>
+            </div>
+            <div className="flex flex-col gap-1 text-center">
+              <p className="text-gray-400 text-sm font-pretendard">쿠폰번호</p>
+              <p className="text-black text-base font-pretendard">
+                {serialNumber}
+              </p>
+            </div>
           </div>
-        </div>
 
-        {/* 버튼들 */}
-        <div className="flex flex-col gap-3">
-          <a href="tel:114">
-            <Button variant="yellow">
-              <PhoneCall className="w-4 h-4" />
-              쿠폰 사용하기
-            </Button>
-          </a>
-
-          {/* <Link href="/">
-            <Button variant="black">메인으로 돌아가기</Button>
-          </Link> */}
-
-          <Link href="/coupon-list">
-            <Button variant="black">오늘 뽑은 쿠폰 확인하기</Button>
-          </Link>
-
-          {remainingChances === null && (
-            <Button
-              variant="disabled"
-              disabled
+          {/* 버튼들 */}
+          <div className="flex flex-col gap-3">
+            <a
+              href="tel:114"
               className="w-full"
             >
-              로딩중...
-            </Button>
-          )}
+              <Button
+                variant="yellow"
+                className="w-full"
+              >
+                <PhoneCall className="w-4 h-4" />
+                쿠폰 사용하기
+              </Button>
+            </a>
 
-          {remainingChances !== null && remainingChances > 0 && (
-            <Link href="/slot-machine">
-              <Button variant="black">
-                다시 도전하기 ({remainingChances}번)
+            {/* <Link href="/">
+              <Button variant="black">메인으로 돌아가기</Button>
+            </Link> */}
+
+            <Link
+              href="/coupon-list"
+              className="w-full"
+            >
+              <Button
+                variant="black"
+                className="w-full"
+              >
+                오늘 뽑은 쿠폰 확인하기
               </Button>
             </Link>
-          )}
 
-          {remainingChances === 0 && (
-            <Button
-              variant="disabled"
-              disabled
-            >
-              내일 다시 참여 해보세요!
-            </Button>
-          )}
+            {remainingChances === null && (
+              <Button
+                variant="disabled"
+                disabled
+                className="w-full"
+              >
+                로딩중...
+              </Button>
+            )}
+
+            {remainingChances !== null && remainingChances > 0 && (
+              <Link
+                href="/slot-machine"
+                className="w-full"
+              >
+                <Button
+                  variant="black"
+                  className="w-full"
+                >
+                  한번더 뽑기 ({remainingChances}번)
+                </Button>
+              </Link>
+            )}
+
+            {remainingChances === 0 && (
+              <Button
+                variant="disabled"
+                disabled
+                className="w-full"
+              >
+                내일 다시 참여 해보세요!
+              </Button>
+            )}
+          </div>
+
+          {/* 접을 수 있는 사용방법 및 주의사항 */}
+          <CouponDisclaimer />
         </div>
-      </div>
-    </Container>
+      </Container>
+    </div>
   );
 }
 
 export default function ResultPage() {
   return (
-    <Suspense
-      fallback={
-        <Container>
-          <div className="text-center">
-            <p className="text-gray-600 text-lg font-medium font-gmarket">
-              결과를 불러오는 중...
-            </p>
+    <div className="min-h-screen flex flex-col">
+      <Suspense
+        fallback={
+          <div className="flex-1">
+            <Container>
+              <div className="text-center">
+                <p className="text-gray-600 text-lg font-medium font-gmarket">
+                  결과를 불러오는 중...
+                </p>
+              </div>
+            </Container>
           </div>
-        </Container>
-      }
-    >
-      <ResultContent />
-    </Suspense>
+        }
+      >
+        <ResultContent />
+      </Suspense>
+      <Footer />
+    </div>
   );
 }

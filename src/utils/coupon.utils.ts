@@ -46,13 +46,13 @@ export function checkAndResetDaily(): void {
   const stored = localStorage.getItem('dailyCouponData');
 
   if (!stored) {
-    // 첫 방문 시 초기 데이터 설정
     const initialData: DailyData = {
       date: today,
       remainingChances: 5,
       coupons: [],
       lastResetDate: today,
     };
+
     localStorage.setItem('dailyCouponData', JSON.stringify(initialData));
     return;
   }
@@ -68,7 +68,6 @@ export function checkAndResetDaily(): void {
       lastResetDate: today,
     };
     localStorage.setItem('dailyCouponData', JSON.stringify(resetData));
-    console.log('일일 데이터가 초기화되었습니다:', today);
   }
 }
 
@@ -95,7 +94,6 @@ export function addCouponAndReduceChance(amount: number): StoredCoupon | null {
   const data = getTodayData();
 
   if (data.remainingChances <= 0) {
-    console.log('남은 기회가 없습니다.');
     return null;
   }
 
@@ -115,8 +113,6 @@ export function addCouponAndReduceChance(amount: number): StoredCoupon | null {
   data.remainingChances -= 1;
 
   localStorage.setItem('dailyCouponData', JSON.stringify(data));
-  console.log('쿠폰이 저장되었습니다:', newCoupon);
-
   return newCoupon;
 }
 

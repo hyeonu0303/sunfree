@@ -9,8 +9,9 @@ import {
   addCouponAndReduceChance,
   getRemainingChances,
   checkAndResetDaily,
-  type StoredCoupon,
 } from '@/utils/coupon.utils';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export default function SlotMachine() {
   const router = useRouter();
@@ -40,11 +41,6 @@ export default function SlotMachine() {
         handleSpin();
       }, 1000);
       return () => clearTimeout(timer);
-    } else {
-      // 기회가 없으면 메인 페이지로 리다이렉트
-      setTimeout(() => {
-        router.push('/');
-      }, 2000);
     }
   }, [router]);
 
@@ -114,16 +110,14 @@ export default function SlotMachine() {
       <Container>
         <div className="text-center">
           <h1 className="text-black text-3xl font-bold font-gmarket mb-8">
-            오늘의 기회를 모두 사용했습니다
+            오늘의 기회를 <br /> 모두 사용했습니다
           </h1>
           <p className="text-gray-600 text-lg font-medium font-gmarket mb-8">
-            내일 자정 이후에 다시 도전해주세요!
+            내일 자정 이후에 다시 발급 받으세요!
           </p>
-          <div className="bg-main rounded-[40px] px-8 py-4">
-            <span className="text-navy text-xl font-bold font-gmarket">
-              0/5
-            </span>
-          </div>
+          <Link href="/">
+            <Button variant="black">메인으로 돌아가기</Button>
+          </Link>
         </div>
       </Container>
     );
