@@ -2,7 +2,10 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { Coupon, GameState } from '@/types/coupon';
-import { generateCouponNumber } from '@/utils/coupon.utils';
+import {
+  addCouponAndReduceChance,
+  getRemainingChances,
+} from '@/utils/coupon.utils';
 import { AMOUNTS } from '@/constants/constant';
 import WinModal from '@/components/win_modal';
 import CouponList from '@/components/coupon-list';
@@ -17,6 +20,15 @@ export default function SlotMachine() {
     showWinModal: false,
     currentWin: undefined,
   });
+
+  // 컴포넌트 마운트 시 실제 남은 기회 수 로드
+  useEffect(() => {
+    const actualRemainingChances = getRemainingChances();
+    setGameState((prev) => ({
+      ...prev,
+      remainingChances: actualRemainingChances,
+    }));
+  }, []);
 
   const [winAmount, setWinAmount] = useState(1000);
   const [stoppedReels, setStoppedReels] = useState<boolean[]>([
@@ -65,23 +77,35 @@ export default function SlotMachine() {
           setTimeout(() => {
             console.log('당첨 쿠폰 생성 중...');
 
-            const newCoupon: Coupon = {
-              id: `${Date.now()}-${Math.random()}`,
-              amount: winAmount,
-              serialNumber: generateCouponNumber(),
-              wonAt: new Date(),
-            };
+            // localStorage에 쿠폰 저장하고 남은 기회 차감
+            const storedCoupon = addCouponAndReduceChance(winAmount);
 
-            setGameState((prevState) => ({
-              ...prevState,
-              isSpinning: false,
-              remainingChances: prevState.remainingChances - 1,
-              wonCoupons: [...prevState.wonCoupons, newCoupon],
-              showWinModal: true,
-              currentWin: newCoupon,
-            }));
+            if (storedCoupon) {
+              const newCoupon: Coupon = {
+                id: storedCoupon.id,
+                amount: storedCoupon.amount,
+                serialNumber: storedCoupon.serialNumber,
+                wonAt: new Date(storedCoupon.wonAt),
+              };
 
-            console.log('쿠폰 생성 완료:', newCoupon);
+              setGameState((prevState) => ({
+                ...prevState,
+                isSpinning: false,
+                remainingChances: getRemainingChances(), // 실제 남은 기회 수 가져오기
+                wonCoupons: [...prevState.wonCoupons, newCoupon],
+                showWinModal: true,
+                currentWin: newCoupon,
+              }));
+
+              console.log('쿠폰 생성 및 저장 완료:', newCoupon);
+            } else {
+              console.error('쿠폰 생성 실패: 남은 기회가 없습니다.');
+              setGameState((prevState) => ({
+                ...prevState,
+                isSpinning: false,
+                remainingChances: getRemainingChances(),
+              }));
+            }
           }, 1000);
         }
 

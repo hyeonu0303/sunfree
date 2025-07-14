@@ -68,14 +68,21 @@ const SlotReel = ({
         setIsSpinning(false);
         setIsStopped(true);
 
-        // 최종 결과 설정
+        // 최종 결과 설정 - 순서대로 배치
+        const currentIndex = AMOUNTS.indexOf(finalAmount);
+        const topAmount =
+          AMOUNTS[(currentIndex - 1 + AMOUNTS.length) % AMOUNTS.length];
+        const bottomAmount = AMOUNTS[(currentIndex + 1) % AMOUNTS.length];
+
         setDisplayAmounts([
-          AMOUNTS[Math.floor(Math.random() * AMOUNTS.length)],
-          finalAmount, // 가운데가 당첨 금액
-          AMOUNTS[Math.floor(Math.random() * AMOUNTS.length)],
+          topAmount, // 위 (이전 순서)
+          finalAmount, // 가운데 (당첨 금액)
+          bottomAmount, // 아래 (다음 순서)
         ]);
 
-        console.log(`릴 ${reelIndex}: 정지 완료! 최종 금액=${finalAmount}`);
+        console.log(
+          `릴 ${reelIndex}: 정지 완료! 최종 금액=${finalAmount}, 위=${topAmount}, 아래=${bottomAmount}`
+        );
 
         // 상위 컴포넌트에 정지 알림
         onReelStop(reelIndex);
@@ -83,14 +90,14 @@ const SlotReel = ({
     }, startDelay);
   }, [reelIndex, finalAmount, onReelStop]);
 
-  // 스핀 정지 및 리셋 함수
+  // 스핀 정지 및 리셋 함수 - 당첨 금액 유지
   const resetReel = useCallback(() => {
     console.log(`릴 ${reelIndex}: 리셋`);
 
     isRunningRef.current = false;
     setIsSpinning(false);
-    setIsStopped(false);
-    setDisplayAmounts([1000, 2000, 3000]);
+    // setIsStopped(false); // 이 줄을 제거하여 정지 상태 유지
+    // setDisplayAmounts([1000, 2000, 3000]); // 이 줄을 제거하여 당첨 금액 유지
 
     // 모든 타이머 정리
     if (intervalRef.current) {
@@ -128,27 +135,22 @@ const SlotReel = ({
   }, [resetReel]);
 
   return (
-    <div className="bg-white border-4 border-yellow-400 rounded-xl w-24 h-32 flex flex-col items-center justify-center shadow-lg overflow-hidden relative">
-      {/* 디버깅 정보 */}
-      <div className="absolute -top-6 left-0 text-xs text-white">
-        {isSpinning ? '🔄' : isStopped ? '⏹️' : '⏸️'}
-      </div>
-
-      {/* 세로로 3개 숫자 표시 */}
+    <div className="w-18 h-24 flex items-center justify-center relative overflow-hidden">
+      {/* 세로로 3개 숫자 표시 - 고정 높이 컨테이너 */}
       <div
-        className={`flex flex-col items-center transition-transform duration-100 ${
+        className={`flex flex-col items-center justify-center transition-transform duration-100 ${
           isSpinning ? 'animate-spin-vertical' : ''
-        }`}
+        } ${reelIndex === 0 ? 'translate-x-px' : ''}`}
       >
         {displayAmounts.map((amount, index) => (
           <div
             key={`${reelIndex}-${index}-${amount}`}
-            className={`text-lg font-bold h-10 flex items-center transition-all duration-200 ${
+            className={`text-sm font-bold font-pretendard h-8 flex items-center justify-center transition-all duration-200 ${
               index === 1
                 ? isStopped
-                  ? 'text-blue-600 scale-125'
-                  : 'text-slate-800'
-                : 'text-slate-400 text-sm'
+                  ? 'text-navy scale-105'
+                  : 'text-navy scale-105'
+                : 'text-gray-500 text-xs'
             }`}
           >
             {amount.toLocaleString()}원
