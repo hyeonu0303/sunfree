@@ -60,16 +60,6 @@ export default function CouponListPage() {
           </h1>
         </div>
 
-        {/* 쿠폰 개수 표시 */}
-        <div className="text-center">
-          <div className="inline-flex items-center gap-2 bg-yellow-100 px-4 py-2 rounded-full">
-            <Gift className="w-5 h-5 text-yellow-600" />
-            <span className="text-yellow-800 font-medium font-pretendard">
-              총 {coupons.length}개의 쿠폰을 획득했습니다
-            </span>
-          </div>
-        </div>
-
         {/* 쿠폰 목록 */}
         {coupons.length === 0 ? (
           <div className="text-center py-12">
@@ -84,8 +74,9 @@ export default function CouponListPage() {
               <Link
                 key={coupon.id}
                 href={`/slot-machine/result?won=${coupon.amount}&serial=${coupon.serialNumber}`}
+                className="block w-full"
               >
-                <div className="bg-white border-2 rounded-lg p-4 border-yellow-400 hover:shadow-md transition-all duration-200 active:scale-95">
+                <div className="bg-white border-2 rounded-lg p-4 border-yellow-400 hover:shadow-md transition-all duration-200 active:scale-95 w-full">
                   <div className="flex items-center justify-between">
                     {/* 쿠폰 이미지 */}
                     <div className="flex items-center gap-4">
@@ -114,7 +105,7 @@ export default function CouponListPage() {
                     </div>
 
                     {/* 화살표 */}
-                    <div className="text-gray-400">
+                    <div className="text-gray-300">
                       <svg
                         className="w-6 h-6"
                         fill="none"
@@ -137,10 +128,16 @@ export default function CouponListPage() {
         )}
 
         {/* 하단 버튼들 */}
-        <div className="flex flex-col gap-1 pt-4">
+        <div className="flex flex-col gap-3 pt-4 items-center">
           {remainingChances > 0 && coupons.length < 5 ? (
-            <Link href="/slot-machine">
-              <Button variant="yellow">
+            <Link
+              href="/slot-machine"
+              className="w-full"
+            >
+              <Button
+                variant="yellow"
+                className="w-full"
+              >
                 쿠폰 추가 발급하기 ({remainingChances}번 남음)
               </Button>
             </Link>
@@ -148,13 +145,14 @@ export default function CouponListPage() {
             <Button
               variant="disabled"
               disabled
+              className="w-full"
             >
               내일 다시 도전해보세요!
             </Button>
           )}
           <Button
             variant="black"
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 w-full justify-center"
             onClick={() => router.back()}
           >
             이전 페이지로 돌아가기

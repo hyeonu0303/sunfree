@@ -77,7 +77,7 @@ function ResultContent() {
         </h1> */}
 
         <div className="mb-4">
-          <span className="text-black text-3xl font-bold font-gmarket">
+          <span className="text-black text-2xl font-bold font-gmarket">
             {parseInt(wonAmount).toLocaleString()}원 쿠폰 당첨!
           </span>
         </div>
@@ -87,7 +87,7 @@ function ResultContent() {
           <Image
             src={`/asset/${wonAmount}won.png`}
             alt={`${wonAmount}원 쿠폰`}
-            width={250}
+            width={200}
             height={200}
             priority
           />
@@ -117,7 +117,7 @@ function ResultContent() {
         </div>
 
         {/* 버튼들 */}
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-3">
           <a href="tel:114">
             <Button variant="yellow">
               <PhoneCall className="w-4 h-4" />

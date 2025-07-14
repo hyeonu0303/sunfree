@@ -6,7 +6,7 @@ export default function Coupon() {
   return (
     <div className="flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 w-full">
       {/* 상단 배지 */}
-      <div className="w-56 sm:w-60 md:w-60 h-13 sm:h-14 md:h-14 bg-main rounded-[40px] flex items-center justify-center mb- sm:mb-4 md:mb-6">
+      <div className="w-48 sm:w-52 h-13 sm:h-14 md:h-14 bg-main rounded-[40px] flex items-center justify-center mb-6 sm:mb-4 md:mb-6">
         <span className="text-white text-xl sm:text-xl md:text-2xl font-bold font-gmarket">
           썬프리 고객 혜택
         </span>
@@ -28,7 +28,7 @@ export default function Coupon() {
 
       <div className="text-center mb-3 sm:mb-4 md:mb-5 px-2">
         <h3 className="text-black text-base font-medium font-gmarket">
-          할인 쿠폰으로 맛있는 고기 주문하세요
+          매일 할인도 받고~ 맛있는 고기도 먹고~
         </h3>
       </div>
 

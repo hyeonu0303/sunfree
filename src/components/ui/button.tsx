@@ -20,11 +20,11 @@ const buttonVariants = cva(
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
         yellow:
-          'w-64 sm:w-full h-11 bg-[#ffd350] rounded-[10px] flex items-center justify-center mb-2 sm:mb-3 md:mb-4 cursor-pointer hover:bg-[#ffcc00] active:bg-[#ffcc00] focus:bg-[#ffd350] transition-colors duration-300 text-navy text-lg font-medium font-gmarket select-none',
+          'w-full sm:w-full h-11 bg-[#ffd350] rounded-[10px] flex items-center justify-center cursor-pointer hover:bg-[#ffcc00] active:bg-[#ffcc00] focus:bg-[#ffd350] transition-colors duration-300 text-navy text-lg font-medium font-gmarket select-none',
         black:
-          'w-64 sm:w-full h-12 bg-black rounded-[10px] flex items-center justify-center mb-2 sm:mb-3 md:mb-4 cursor-pointer hover:bg-gray-800 active:bg-gray-800 focus:bg-black transition-colors duration-300 text-white text-lg font-medium font-gmarket select-none',
+          'w-full sm:w-full h-12 bg-black rounded-[10px] flex items-center justify-center cursor-pointer hover:bg-gray-800 active:bg-gray-800 focus:bg-black transition-colors duration-300 text-white text-lg font-medium font-gmarket select-none',
         disabled:
-          'w-64 sm:w-full h-12 bg-gray-300 rounded-[10px] flex items-center justify-center mb-2 sm:mb-3 md:mb-4 cursor-not-allowed text-lg font-medium font-gmarket text-white select-none',
+          'w-full sm:w-full h-12 bg-gray-300 rounded-[10px] flex items-center justify-center cursor-not-allowed text-lg font-medium font-gmarket text-white select-none',
       },
       size: {
         default: 'h-12 px-4 py-2 has-[>svg]:px-3',
