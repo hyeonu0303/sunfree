@@ -14,6 +14,7 @@ import confetti from 'canvas-confetti';
 import { PhoneCall } from 'lucide-react';
 import CouponDisclaimer from '@/components/coupon-disclaimer';
 import Footer from '@/components/footer';
+import { ADMIN_PHONE } from '@/constants/constant';
 
 function ResultContent() {
   const searchParams = useSearchParams();
@@ -65,7 +66,7 @@ function ResultContent() {
     if (isFirstWinToday()) {
       const timer = setTimeout(() => {
         fireConfetti();
-      }, 500); // 0.5초 후 실행
+      }, 500);
 
       return () => clearTimeout(timer);
     }
@@ -75,10 +76,6 @@ function ResultContent() {
     <div className="flex-1">
       <Container>
         <div className="text-center">
-          {/* <h1 className="text-black text-4xl font-bold font-gmarket mb-6">
-            🎉 축하합니다! 🎉
-          </h1> */}
-
           <div className="mb-4">
             <span className="text-black text-2xl font-bold font-gmarket">
               {parseInt(wonAmount).toLocaleString()}원 쿠폰 당첨!
@@ -111,10 +108,9 @@ function ResultContent() {
             </div>
           </div>
 
-          {/* 버튼들 */}
           <div className="flex flex-col gap-3">
             <a
-              href="tel:114"
+              href={`tel:${ADMIN_PHONE}`}
               className="w-full"
             >
               <Button
@@ -125,10 +121,6 @@ function ResultContent() {
                 쿠폰 사용하기
               </Button>
             </a>
-
-            {/* <Link href="/">
-              <Button variant="black">메인으로 돌아가기</Button>
-            </Link> */}
 
             <Link
               href="/coupon-list"

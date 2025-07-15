@@ -2,7 +2,7 @@ export interface Coupon {
   id: string;
   amount: number;
   serialNumber: string;
-  wonAt: Date;
+  createdAt: Date;
 }
 
 // 게임 상태 타입

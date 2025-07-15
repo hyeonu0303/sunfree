@@ -107,7 +107,7 @@ export default function CouponListPage() {
                               {coupon.serialNumber}
                             </p>
                             <p className="text-gray-400 text-xs font-pretendard">
-                              {formatTime(coupon.wonAt)} 획득
+                              {formatTime(coupon.createdAt)} 획득
                             </p>
                           </div>
                         </div>

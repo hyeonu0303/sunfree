@@ -9,12 +9,12 @@ export interface StoredCoupon {
   id: string;
   amount: number;
   serialNumber: string;
-  wonAt: string; // ISO string
-  expiresAt: string; // ISO string
+  createdAt: string;
+  expiresAt: string;
 }
 
 export interface DailyData {
-  date: string; // YYYY-MM-DD 형식
+  date: string;
   remainingChances: number;
   coupons: StoredCoupon[];
   lastResetDate: string;
@@ -105,7 +105,7 @@ export function addCouponAndReduceChance(amount: number): StoredCoupon | null {
     id: `coupon-${Date.now()}-${Math.random()}`,
     amount,
     serialNumber: generateSerialNumber(),
-    wonAt: now.toISOString(),
+    createdAt: now.toISOString(),
     expiresAt: expiresAt.toISOString(),
   };
 

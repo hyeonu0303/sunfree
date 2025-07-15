@@ -1,3 +1,6 @@
+import { ADMIN_PHONE } from '@/constants/constant';
+import Link from 'next/link';
+
 export default function Footer() {
   return (
     <footer className="bg-white border-t border-gray-100 shadow-lg mt-auto">
@@ -6,9 +9,14 @@ export default function Footer() {
         <div className="space-y-4">
           {/* 로고 */}
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-800 font-dancing mb-2">
-              SunFree
-            </h2>
+            <Link
+              href="/admin"
+              className="hover:cursor-default"
+            >
+              <h2 className="text-2xl font-bold text-gray-800 font-dancing mb-2">
+                SunFree
+              </h2>
+            </Link>
             <div className="w-12 h-0.5 bg-gradient-to-r from-yellow-400 to-amber-500 mx-auto"></div>
           </div>
 
@@ -36,10 +44,10 @@ export default function Footer() {
               <p className="text-xs text-gray-600 font-pretendard">
                 <span className="font-semibold text-gray-800">핸드폰</span>
                 <a
-                  href="tel:010-9095-0327"
+                  href={`tel:${ADMIN_PHONE}`}
                   className="ml-2 text-amber-600 hover:text-amber-700 font-medium transition-colors"
                 >
-                  010-9095-0327
+                  {ADMIN_PHONE}
                 </a>
               </p>
               <p className="text-xs text-gray-600 font-pretendard">
