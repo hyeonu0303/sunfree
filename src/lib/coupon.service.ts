@@ -5,7 +5,7 @@ import { Coupon } from '@/types/coupon';
 // MongoDB에 저장될 쿠폰 문서 타입
 export interface CouponDocument extends Omit<Coupon, 'id'> {
   _id?: ObjectId;
-  used?: boolean;
+  used?: boolean; // 기존 used 필드 (호환성)
   usedAt?: Date;
   userInfo?: {
     ip?: string;
@@ -25,17 +25,13 @@ export class CouponService {
    * @param userInfo 사용자 정보 (선택)
    * @returns 생성된 쿠폰
    */
-  static async createCoupon(
-    couponData: Omit<Coupon, 'id'>,
-    userInfo?: { ip?: string; userAgent?: string }
-  ): Promise<Coupon> {
+  static async createCoupon(couponData: Omit<Coupon, 'id'>): Promise<Coupon> {
     try {
       const collection = await getCollection(this.COLLECTION_NAME);
 
       const document: CouponDocument = {
         ...couponData,
         used: false,
-        userInfo,
       };
 
       const result = await collection.insertOne(document);
@@ -43,6 +39,7 @@ export class CouponService {
       return {
         id: result.insertedId.toString(),
         ...couponData,
+        isUsed: false,
       };
     } catch (error) {
       console.error('쿠폰 생성 실패:', error);
@@ -67,6 +64,8 @@ export class CouponService {
         amount: document.amount,
         serialNumber: document.serialNumber,
         createdAt: document.createdAt,
+        expiresAt: document.expiresAt,
+        isUsed: document.used || false,
       };
     } catch (error) {
       console.error('쿠폰 조회 실패:', error);
@@ -91,6 +90,8 @@ export class CouponService {
         amount: document.amount,
         serialNumber: document.serialNumber,
         createdAt: document.createdAt,
+        expiresAt: document.expiresAt,
+        isUsed: document.used || false,
       };
     } catch (error) {
       console.error('쿠폰 조회 실패:', error);
@@ -127,6 +128,8 @@ export class CouponService {
         amount: doc.amount,
         serialNumber: doc.serialNumber,
         createdAt: doc.createdAt,
+        expiresAt: doc.expiresAt,
+        isUsed: doc.used || false,
       }));
 
       return { coupons, total };
@@ -174,6 +177,61 @@ export class CouponService {
       return result.deletedCount > 0;
     } catch (error) {
       console.error('쿠폰 삭제 실패:', error);
+      return false;
+    }
+  }
+
+  /**
+   * 모든 쿠폰 삭제 (관리자 전용)
+   * @returns 삭제된 쿠폰 수
+   */
+  static async deleteAllCoupons(): Promise<number> {
+    try {
+      const collection = await getCollection(this.COLLECTION_NAME);
+      const result = await collection.deleteMany({});
+
+      console.log(`전체 쿠폰 삭제 완료: ${result.deletedCount}개 삭제됨`);
+      return result.deletedCount;
+    } catch (error) {
+      console.error('전체 쿠폰 삭제 실패:', error);
+      throw new Error('전체 쿠폰 삭제에 실패했습니다.');
+    }
+  }
+
+  /**
+   * 쿠폰 사용 상태 업데이트
+   * @param id 쿠폰 ID
+   * @param isUsed 사용 상태
+   * @returns 성공 여부
+   */
+  static async updateCouponUsedStatus(
+    id: string,
+    isUsed: boolean
+  ): Promise<boolean> {
+    try {
+      const collection = await getCollection(this.COLLECTION_NAME);
+      const updateData: any = {
+        used: isUsed,
+      };
+
+      // 사용 완료로 변경하는 경우 usedAt 필드 추가
+      if (isUsed) {
+        updateData.usedAt = new Date();
+      } else {
+        // 미사용으로 변경하는 경우 usedAt 필드 제거
+        updateData.$unset = { usedAt: 1 };
+      }
+
+      const result = await collection.updateOne(
+        { _id: new ObjectId(id) },
+        isUsed
+          ? { $set: updateData }
+          : { $set: { used: false }, $unset: { usedAt: 1 } }
+      );
+
+      return result.modifiedCount > 0;
+    } catch (error) {
+      console.error('쿠폰 상태 업데이트 실패:', error);
       return false;
     }
   }

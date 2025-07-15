@@ -3,6 +3,8 @@ export interface Coupon {
   amount: number;
   serialNumber: string;
   createdAt: Date;
+  expiresAt: Date;
+  isUsed?: boolean; // 쿠폰 사용 완료 상태
 }
 
 // 게임 상태 타입

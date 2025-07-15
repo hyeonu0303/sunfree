@@ -45,6 +45,9 @@ export async function connectToDatabase(): Promise<MongoClient> {
       serverSelectionTimeoutMS: 5000, // 서버 선택 타임아웃
       socketTimeoutMS: 45000, // 소켓 타임아웃
       connectTimeoutMS: 10000, // 연결 타임아웃
+      tls: true, // TLS 사용
+      tlsAllowInvalidCertificates: true, // 개발환경에서만 사용
+      tlsAllowInvalidHostnames: true, // 개발환경에서만 사용
     };
 
     cached.promise = MongoClient.connect(MONGODB_URI!, options)

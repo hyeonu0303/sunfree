@@ -67,8 +67,6 @@ export default function SlotMachine() {
         const newStoppedReels = [...prev];
         newStoppedReels[reelIndex] = true;
 
-        console.log(`새로운 정지 상태:`, newStoppedReels);
-
         // 모든 릴이 멈췄는지 확인
         const allStopped = newStoppedReels.every((stopped) => stopped);
 
@@ -77,22 +75,24 @@ export default function SlotMachine() {
           hasProcessedWinRef.current = true;
 
           // 마지막 릴이 멈춘 후 2초 뒤에 결과 처리
-          setTimeout(() => {
+          setTimeout(async () => {
             setIsSpinning(false);
 
             // localStorage에 쿠폰 저장 및 기회 차감
-            const savedCoupon = addCouponAndReduceChance(winAmount);
+            const savedCoupon = await addCouponAndReduceChance(winAmount);
 
-            if (savedCoupon) {
-              console.log('쿠폰 발급 완료:', savedCoupon);
+            if (savedCoupon.success && savedCoupon.data) {
+              console.log('쿠폰 발급 완료:', savedCoupon.data);
               // 남은 기회 수 업데이트
               setRemainingChances(getRemainingChances());
               // 결과 페이지로 이동 (일련번호 포함)
               router.push(
-                `/slot-machine/result?won=${winAmount}&serial=${savedCoupon.serialNumber}`
+                `/slot-machine/result?won=${winAmount}&serial=${savedCoupon.data.serialNumber}`
               );
             } else {
-              console.error('쿠폰 저장 실패');
+              alert(
+                '쿠폰 발급 실패! 계속된 오류가 발생하면 담당자에게 연락주세요.'
+              );
               router.push('/');
             }
           }, 2000);

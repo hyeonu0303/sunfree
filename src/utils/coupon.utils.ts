@@ -1,7 +1,20 @@
+// CouponService import 제거 - API 라우트를 통해 쿠폰 생성
+
+// API 응답 타입 정의
+export interface CouponResponse {
+  success: boolean;
+  data: StoredCoupon | null;
+}
+
 export function generateCouponNumber(): string {
   const timestamp = Date.now().toString();
   const random = Math.random().toString(36).substring(2, 8);
   return `${timestamp}-${random}`;
+}
+
+export interface CouponResponse {
+  success: boolean;
+  data: StoredCoupon | null;
 }
 
 // 새로운 localStorage 관리 함수들
@@ -25,13 +38,11 @@ export function generateSerialNumber(): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let result = 'SF-';
 
-  // 현재 시간을 밀리초로 변환하여 고유성 보장
-  const timestamp = Date.now().toString(36).toUpperCase();
-  const random = Array.from({ length: 8 - timestamp.length }, () =>
-    chars.charAt(Math.floor(Math.random() * chars.length))
-  ).join('');
+  // 완전히 랜덤한 8자리 대문자+숫자 조합 생성
+  for (let i = 0; i < 8; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
 
-  result += (timestamp + random).substring(0, 8);
   return result;
 }
 
@@ -90,11 +101,16 @@ export function getTodayData(): DailyData {
 }
 
 // 쿠폰 추가 및 기회 차감
-export function addCouponAndReduceChance(amount: number): StoredCoupon | null {
+export async function addCouponAndReduceChance(
+  amount: number
+): Promise<CouponResponse> {
   const data = getTodayData();
 
   if (data.remainingChances <= 0) {
-    return null;
+    return {
+      success: false,
+      data: null,
+    };
   }
 
   const now = new Date();
@@ -109,11 +125,38 @@ export function addCouponAndReduceChance(amount: number): StoredCoupon | null {
     expiresAt: expiresAt.toISOString(),
   };
 
+  // 먼저 localStorage에 저장 (사용자 경험 우선)
   data.coupons.push(newCoupon);
   data.remainingChances -= 1;
-
   localStorage.setItem('dailyCouponData', JSON.stringify(data));
-  return newCoupon;
+
+  // API를 통해 MongoDB에 쿠폰 저장 (백그라운드)
+  try {
+    const response = await fetch('/api/coupons', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        amount: newCoupon.amount,
+        serialNumber: newCoupon.serialNumber,
+        createdAt: newCoupon.createdAt,
+        expiresAt: newCoupon.expiresAt,
+      }),
+    });
+
+    if (!response.ok) {
+      console.warn('쿠폰 DB 저장 실패, localStorage만 저장됨');
+    }
+  } catch (error) {
+    console.warn('쿠폰 DB 저장 실패, localStorage만 저장됨:', error);
+  }
+
+  // 사용자에게는 항상 성공 반환 (localStorage 저장 성공했으므로)
+  return {
+    success: true,
+    data: newCoupon,
+  };
 }
 
 // 남은 기회 수 가져오기
