@@ -30,6 +30,19 @@ export default function AdminPage() {
       const data = await response.json();
 
       if (data.success) {
+        // 로그인 성공 시 세션 저장 (2시간 유효)
+        const loginTime = new Date().getTime();
+        const expiryTime = loginTime + 2 * 60 * 60 * 1000; // 2시간 후 만료
+
+        sessionStorage.setItem(
+          'adminLogin',
+          JSON.stringify({
+            isLoggedIn: true,
+            loginTime,
+            expiryTime,
+          })
+        );
+
         setIsLoggedIn(true);
         router.push('/admin/coupon-table');
       } else {
@@ -43,7 +56,7 @@ export default function AdminPage() {
     }
   };
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col px-10 sm:px-0">
       <div className="w-full">
         <div className="max-w-md mx-auto py-16">
           <div className="text-center mb-8">

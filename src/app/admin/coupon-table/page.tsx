@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Search, ArrowLeft, Trash2, Check } from 'lucide-react';
+import { Search, ArrowLeft, Trash2, Check, ChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 interface Coupon {
@@ -47,6 +47,7 @@ export default function CouponTable() {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // 통계 데이터를 위한 별도 state
   const [stats, setStats] = useState({
@@ -60,6 +61,61 @@ export default function CouponTable() {
 
   // 300ms debounce 적용
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
+  // 로그인 상태 확인 함수
+  const checkAuthStatus = () => {
+    try {
+      const adminLogin = sessionStorage.getItem('adminLogin');
+      if (!adminLogin) {
+        return false;
+      }
+
+      const loginData = JSON.parse(adminLogin);
+      const currentTime = new Date().getTime();
+
+      // 세션 만료 확인
+      if (currentTime > loginData.expiryTime) {
+        sessionStorage.removeItem('adminLogin');
+        return false;
+      }
+
+      return loginData.isLoggedIn;
+    } catch (error) {
+      console.error('인증 상태 확인 오류:', error);
+      return false;
+    }
+  };
+
+  // 로그아웃 함수
+  const handleLogout = () => {
+    sessionStorage.removeItem('adminLogin');
+    router.push('/admin');
+  };
+
+  // 컴포넌트 마운트 시 인증 상태 확인
+  useEffect(() => {
+    const isAuth = checkAuthStatus();
+    if (!isAuth) {
+      router.push('/admin');
+      return;
+    }
+    setIsAuthenticated(true);
+  }, [router]);
+
+  // 주기적으로 세션 상태 확인 (30초마다)
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const interval = setInterval(() => {
+      const isAuth = checkAuthStatus();
+      if (!isAuth) {
+        alert('세션이 만료되었습니다. 다시 로그인해주세요.');
+        router.push('/admin');
+      }
+    }, 30000); // 30초마다 확인
+
+    return () => clearInterval(interval);
+  }, [isAuthenticated, router]);
 
   // 쿠폰 데이터 가져오기
   const fetchCoupons = async (page: number = 1) => {
@@ -102,17 +158,20 @@ export default function CouponTable() {
 
   // 페이지 로드 시 데이터 가져오기
   useEffect(() => {
+    if (!isAuthenticated) return; // 인증되지 않으면 데이터 가져오지 않음
+
     fetchCoupons(currentPage);
     // 첫 페이지 로드시에만 통계 가져오기
     if (currentPage === 1) {
       fetchStats();
     }
-  }, [currentPage]);
+  }, [currentPage, isAuthenticated]);
 
   // 초기 로드시 통계 가져오기
   useEffect(() => {
+    if (!isAuthenticated) return; // 인증되지 않으면 데이터 가져오지 않음
     fetchStats();
-  }, []);
+  }, [isAuthenticated]);
 
   // 검색 필터링 (debounced search term 사용)
   const filteredCoupons = useMemo(() => {
@@ -134,8 +193,6 @@ export default function CouponTable() {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
     });
   };
 
@@ -257,24 +314,38 @@ export default function CouponTable() {
   //   }
   // };
 
+  // 인증되지 않은 경우 아무것도 렌더링하지 않음
+  if (!isAuthenticated) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="py-6 space-y-6">
           {/* 헤더 */}
-          <div className="flex items-center gap-4 mb-6">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => router.back()}
+                className="flex items-center gap-2 border-none w-auto"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <h1 className="text-xl sm:text-2xl font-bold text-black font-pretendard">
+                쿠폰 관리
+              </h1>
+            </div>
             <Button
               variant="outline"
-              size="default"
-              onClick={() => router.back()}
-              className="flex items-center gap-2 w-24"
+              size="sm"
+              onClick={handleLogout}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
             >
-              <ArrowLeft className="w-4 h-4" />
-              뒤로가기
+              로그아웃
             </Button>
-            <h1 className="text-2xl font-bold text-black font-pretendard">
-              쿠폰 관리
-            </h1>
           </div>
 
           {/* 검색창 */}
@@ -371,7 +442,7 @@ export default function CouponTable() {
                           className={coupon.isUsed ? 'bg-gray-100' : ''}
                         >
                           <TableCell
-                            className={`font-mono font-pretendard ${
+                            className={`font-pretendard ${
                               coupon.isUsed ? 'text-gray-500' : ''
                             }`}
                           >
@@ -458,7 +529,7 @@ export default function CouponTable() {
                             쿠폰번호
                           </p>
                           <p
-                            className={`font-mono text-sm font-pretendard ${
+                            className={`text-sm font-pretendard ${
                               coupon.isUsed ? 'text-gray-500' : ''
                             }`}
                           >

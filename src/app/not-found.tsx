@@ -26,12 +26,7 @@ export default function NotFound() {
 
           {/* 홈으로 돌아가기 버튼 */}
           <Link href="/">
-            <Button
-              variant="black"
-              className="w-64"
-            >
-              홈으로 돌아가기
-            </Button>
+            <Button variant="black">홈으로 돌아가기</Button>
           </Link>
         </div>
       </Container>
